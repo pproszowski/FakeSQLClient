@@ -185,7 +185,6 @@ public class Parser {
         jsonObject.put("Query", query);
 
         jsonObject.put("Target", "table");
-        System.out.println(jsonObject.toString());
         return jsonObject;
     }
 
@@ -273,7 +272,6 @@ public class Parser {
         query.put("Name", tableName);
         jsonObject.put("Query", query);
 
-        System.out.println(jsonObject.toString());
         return jsonObject;
     }
 
@@ -332,7 +330,6 @@ public class Parser {
                 if(connector != null){
                     connector = connector.replaceAll("\\s", "");
                 }
-                System.out.println(connector);
                 if(connector == null){
                     jsonCondition.put("Connector", "null");
                 }else{
@@ -348,7 +345,6 @@ public class Parser {
         }
 
         for(int i = 0; i < jsonConditions.length(); i++){
-            System.out.println(jsonConditions.get(i).toString());
         }
 
         return jsonConditions;
@@ -376,7 +372,6 @@ public class Parser {
                 break;
         }
 
-        System.out.println(jsonObject.toString());
         return jsonObject;
     }
 
