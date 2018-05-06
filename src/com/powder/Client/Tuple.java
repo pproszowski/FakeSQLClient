@@ -39,7 +39,6 @@ public class Tuple<T> {
     }
 
     @Override
-    public String toString() {
-        return "(TUPLE): {" + value.toString() + " : " + typeName + "}";
+    public String toString() { return "(TUPLE): {" + value + " : " + typeName + "}";
     }
 }

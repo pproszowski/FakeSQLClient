@@ -50,6 +50,7 @@ public class Parser {
                 throw new InvalidKeyWordException();
         }
 
+        jsonObject.put("Type", "Query");
         return jsonObject;
     }
 

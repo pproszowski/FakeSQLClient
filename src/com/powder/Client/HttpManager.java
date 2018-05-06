@@ -3,7 +3,9 @@ package com.powder.Client;
 import com.powder.Exception.IncorrectSyntaxException;
 import com.powder.Exception.InvalidKeyWordException;
 import com.powder.Exception.UnknownTypeException;
+import com.powder.Exception.WrongPasswordException;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -18,41 +20,29 @@ public class HttpManager {
     private URL url;
     private URLConnection con;
     private static HttpManager instance = null;
-    private String login;
-    private String password;
 
-    private HttpManager() throws IOException {
-        url = new URL("http://localhost:8080");
-        con = url.openConnection();
-    }
-
-    public static HttpManager getInstance() throws IOException {
+    public static HttpManager getInstance() {
         if(instance == null){
-            return new HttpManager();
-        }else{
-            return instance;
+            instance = new HttpManager();
         }
+        return instance;
     }
-    public void sendRequest(String command){
-        try {
-            HttpURLConnection http = (HttpURLConnection)con;
-            http.setRequestMethod("POST");
-            http.setDoOutput(true);
-            byte[] out = Parser.parseSQLtoJSON(command).toString().getBytes(StandardCharsets.UTF_8);
-            int length = out.length;
-            http.setFixedLengthStreamingMode(length);
-            http.setRequestProperty("Content-Type", "text/plain; charset=UTF-8");
-            http.connect();
-            try(OutputStream os = http.getOutputStream()) {
-                os.write(out);
-                os.flush();
-            }
-
-        } catch (IncorrectSyntaxException | UnknownTypeException | JSONException | InvalidKeyWordException | IOException e) {
-            e.printStackTrace();
+    public void sendRequest(String message) throws IOException {
+        con = url.openConnection();
+        HttpURLConnection http = (HttpURLConnection)con;
+        http.setRequestMethod("POST");
+        http.setDoOutput(true);
+        byte[] out = message.getBytes(StandardCharsets.UTF_8);
+        int length = out.length;
+        http.setFixedLengthStreamingMode(length);
+        http.setRequestProperty("Content-Type", "text/plain; charset=UTF-8");
+        http.connect();
+        try(OutputStream os = http.getOutputStream()) {
+            os.write(out);
+            os.flush();
         }
-    }
-    public String getResponse() throws IOException {
+}
+    public JSONObject getResponse() throws IOException, JSONException {
         BufferedReader in = new BufferedReader(
                 new InputStreamReader(con.getInputStream()));
         String inputLine;
@@ -63,6 +53,19 @@ public class HttpManager {
         }
         in.close();
 
-        return(response.toString().replaceAll("<br>", "\n"));
+        return new JSONObject(response.toString());
     }
+
+    public JSONObject establishConnection(String urlInput, String password) throws IOException, WrongPasswordException, JSONException {
+        if(!urlInput.contains("http://")){
+            urlInput = "http://" + urlInput;
+        }
+        url = new URL(urlInput);
+        String message = "{\"Type\":\"Authentication\",\"password\":\"" + password + "\"}";
+        sendRequest(message);
+
+        return getResponse();
+
+    }
+
 }

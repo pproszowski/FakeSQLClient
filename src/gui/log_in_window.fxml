@@ -18,27 +18,21 @@
           GridPane.columnIndex="0" GridPane.rowIndex="0"
           GridPane.columnSpan="2"/>
 
-    <Label text="URL:"
+    <Label  text="URL:"
            GridPane.columnIndex="0" GridPane.rowIndex="1"/>
 
     <TextField
-            GridPane.columnIndex="1" GridPane.rowIndex="1"/>
-
-    <Label text="User Name:"
-           GridPane.columnIndex="0" GridPane.rowIndex="2"/>
-
-    <TextField
-            GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+            fx:id="urlInput" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
 
     <Label text="Password:"
-           GridPane.columnIndex="0" GridPane.rowIndex="3"/>
+           GridPane.columnIndex="0" GridPane.rowIndex="2"/>
 
     <PasswordField fx:id="passwordField"
-                   GridPane.columnIndex="1" GridPane.rowIndex="3"/>
+                   GridPane.columnIndex="1" GridPane.rowIndex="2"/>
 
     <HBox spacing="10" alignment="bottom_right"
-          GridPane.columnIndex="1" GridPane.rowIndex="4">
-        <Button styleClass="button" text="Sign In"
+          GridPane.columnIndex="1" GridPane.rowIndex="3">
+        <Button fx:id="submitButton" styleClass="button" text="Sign In"
                 onAction="#handleSubmitButtonAction"/>
     </HBox>
 
