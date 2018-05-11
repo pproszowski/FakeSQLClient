@@ -1,4 +1,5 @@
 package com.powder.Client;
+
 public class Tuple<T> {
     private T value;
     private String typeName;
@@ -12,23 +13,22 @@ public class Tuple<T> {
         return typeName;
     }
 
-    public T getValue(){
+    public T getValue() {
         return value;
     }
 
-
     @Override
     public boolean equals(Object obj) {
-        if(obj instanceof Tuple) {
+        if (obj instanceof Tuple) {
             if (value instanceof String) {
                 String one = (String) this.value;
                 String two = ((Tuple) obj).value.toString();
                 return one.equalsIgnoreCase(two);
             }
         }
-        if(this.value.equals(((Tuple) obj).getValue())){
+        if (this.value.equals(((Tuple) obj).getValue())) {
             return this.typeName.equalsIgnoreCase(((Tuple) obj).getTypeName());
-        }else{
+        } else {
             return false;
         }
     }
@@ -39,6 +39,7 @@ public class Tuple<T> {
     }
 
     @Override
-    public String toString() { return "(TUPLE): {" + value + " : " + typeName + "}";
+    public String toString() {
+        return "(TUPLE): {" + value + " : " + typeName + "}";
     }
 }

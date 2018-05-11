@@ -1,9 +1,6 @@
 package com.powder.Client;
 
-import com.powder.Exception.IncorrectSyntaxException;
-import com.powder.Exception.InvalidKeyWordException;
-import com.powder.Exception.UnknownTypeException;
-import com.powder.Exception.WrongPasswordException;
+import com.powder.Client.Exception.WrongPasswordException;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -42,6 +39,7 @@ public class HttpManager {
             os.flush();
         }
 }
+
     public JSONObject getResponse() throws IOException, JSONException {
         BufferedReader in = new BufferedReader(
                 new InputStreamReader(con.getInputStream()));

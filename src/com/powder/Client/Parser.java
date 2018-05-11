@@ -1,30 +1,32 @@
 package com.powder.Client;
 
-import com.powder.Exception.IncorrectSyntaxException;
-import com.powder.Exception.InvalidKeyWordException;
-import com.powder.Exception.UnknownTypeException;
+import com.powder.Client.Exception.IncorrectSyntaxException;
+import com.powder.Client.Exception.InvalidKeyWordException;
+import com.powder.Client.Exception.UnknownTypeException;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 public class Parser {
 
-    public static JSONObject parseSQLtoJSON(String command) throws InvalidKeyWordException, JSONException, IncorrectSyntaxException, UnknownTypeException {
+    public static JSONObject parseSQLtoJSON(String command) throws InvalidKeyWordException, JSONException, IncorrectSyntaxException {
         JSONObject jsonObject;
 
         Pattern pattern = Pattern.compile("\\s*(\\w+)\\s+.*");
         Matcher matcher = pattern.matcher(command);
-        if(!matcher.find()){
+        if (!matcher.find()) {
             throw new InvalidKeyWordException();
         }
 
         String keyWord = matcher.group(1).toUpperCase();
 
-        switch(keyWord){
+        switch (keyWord) {
             case "CREATE":
                 jsonObject = createCase(command);
                 break;
@@ -57,14 +59,14 @@ public class Parser {
     private static JSONObject createCase(String command) throws JSONException, IncorrectSyntaxException {
         Pattern pattern = Pattern.compile("\\s*(\\w+)\\s+(\\w+)[\\s\\S]*");
         Matcher matcher = pattern.matcher(command);
-        if(!matcher.find() || !matcher.matches()){
+        if (!matcher.find() || !matcher.matches()) {
             throw new IncorrectSyntaxException();
         }
 
-       String keyWord = matcher.group(2).toUpperCase();
+        String keyWord = matcher.group(2).toUpperCase();
 
         JSONObject jsonObject = null;
-        switch(keyWord){
+        switch (keyWord) {
             case "TABLE":
                 jsonObject = createTableCase(command);
                 jsonObject.put("Target", "Database");
@@ -82,7 +84,7 @@ public class Parser {
     private static JSONObject createTableCase(String command) throws JSONException, IncorrectSyntaxException {
         Pattern pattern = Pattern.compile("(?i)\\s*create\\s+table\\s+(\\w+)\\s*\\(([\\s\\S]+)\\)[;]?\\s*");
         Matcher matcher = pattern.matcher(command);
-        if(!matcher.find() || !matcher.matches()){
+        if (!matcher.find() || !matcher.matches()) {
             throw new IncorrectSyntaxException();
         }
 
@@ -90,28 +92,9 @@ public class Parser {
         String columnsString = matcher.group(2);
 
         String[] columns = columnsString.split(",");
-        JSONArray jsonColumns = new JSONArray();
-        for(String column : columns){
-            JSONObject jsonColumn = new JSONObject();
-            Pattern columnPattern = Pattern.compile("\\s*(\\w+)\\s+(\\w+)(\\s*\\(\\s*\\d+\\s*\\)\\s*)?[,]?");
-            Matcher columnMatcher = columnPattern.matcher(column);
-            if(!columnMatcher.find()){
-                throw new IncorrectSyntaxException();
-            }
-            jsonColumn.put("Name", columnMatcher.group(1));
-            JSONObject jsonType = new JSONObject();
-            jsonType.put("Name", columnMatcher.group(2));
-            if(columnMatcher.group(3) != null){
-                jsonType.put("Limit", columnMatcher.group(3).replace("(", "")
-                                                      .replace(")", "")
-                                                      .replaceAll("\\s+", ""));
-            }else{
-                jsonType.put("Limit", 255);
-            }
-            jsonColumn.put("Type", jsonType);
-            jsonColumns.put(jsonColumn);
-        }
 
+        JSONArray jsonColumns = new JSONArray();
+        putColumnsIntoJSON(jsonColumns, columns);
         JSONObject jsonObject = new JSONObject();
         JSONObject query = new JSONObject();
         query.put("Operation", "addtable");
@@ -126,13 +109,36 @@ public class Parser {
 
     }
 
+    private static void putColumnsIntoJSON(JSONArray jsonColumns, String[] columns) throws IncorrectSyntaxException, JSONException {
+        for (String column : columns) {
+            JSONObject jsonColumn = new JSONObject();
+            Pattern columnPattern = Pattern.compile("\\s*(\\w+)\\s+(\\w+)(\\s*\\(\\s*\\d+\\s*\\)\\s*)?[,]?");
+            Matcher columnMatcher = columnPattern.matcher(column);
+            if (!columnMatcher.find()) {
+                throw new IncorrectSyntaxException();
+            }
+            jsonColumn.put("Name", columnMatcher.group(1));
+            JSONObject jsonType = new JSONObject();
+            jsonType.put("Name", columnMatcher.group(2));
+            if (columnMatcher.group(3) != null) {
+                jsonType.put("Limit", columnMatcher.group(3).replace("(", "")
+                        .replace(")", "")
+                        .replaceAll("\\s+", ""));
+            } else {
+                jsonType.put("Limit", 255);
+            }
+            jsonColumn.put("Type", jsonType);
+            jsonColumns.put(jsonColumn);
+        }
+    }
+
     private static JSONObject createDatabaseCase(String command) throws JSONException, IncorrectSyntaxException {
         JSONObject jsonObject = new JSONObject();
 
         Pattern pattern = Pattern.compile("\\s*(\\w+)\\s+(\\w+)\\s+(\\S+)\\s*[;]?\\s*");
         Matcher matcher = pattern.matcher(command);
 
-        if(!matcher.find() || !matcher.matches()){
+        if (!matcher.find() || !matcher.matches()) {
             throw new IncorrectSyntaxException();
         }
 
@@ -147,14 +153,14 @@ public class Parser {
         return jsonObject;
     }
 
-    private static JSONObject selectCase(String command) throws JSONException, IncorrectSyntaxException, InvalidKeyWordException {
+    private static JSONObject selectCase(String command) throws JSONException, IncorrectSyntaxException {
         JSONObject jsonObject = new JSONObject();
 
         Pattern pattern;
         pattern = Pattern.compile("(?i)\\s*select\\s+(.+)\\s+from\\s+(\\S+)(\\s+where\\s+(\\w+.*))?\\s*[;]?\\s*");
         Matcher matcher = pattern.matcher(command);
 
-        if(!matcher.find() || !matcher.matches()){
+        if (!matcher.find() || !matcher.matches()) {
             throw new IncorrectSyntaxException();
         }
 
@@ -163,15 +169,15 @@ public class Parser {
 
         String tableName = matcher.group(2);
         JSONArray jsonColumnNames = new JSONArray();
-        for(String columnName : columnNames){
+        for (String columnName : columnNames) {
             columnName = columnName.replaceAll("^\\s+", "").replaceAll("\\s+$", "");
             jsonColumnNames.put(columnName);
         }
 
         JSONArray jsonConditions;
-        if(matcher.groupCount() > 3){
+        if (matcher.groupCount() > 3) {
             jsonConditions = getConditions(matcher.group(4));
-        }else{
+        } else {
             jsonConditions = new JSONArray();
         }
 
@@ -184,19 +190,18 @@ public class Parser {
         query.put("Conditions", jsonConditions);
 
         jsonObject.put("Query", query);
-
         jsonObject.put("Target", "table");
         return jsonObject;
     }
 
-    private static JSONObject insertCase(String command) throws InvalidKeyWordException, IncorrectSyntaxException, JSONException, UnknownTypeException {
+    private static JSONObject insertCase(String command) throws InvalidKeyWordException, IncorrectSyntaxException, JSONException {
         JSONObject jsonObject = new JSONObject();
         Pattern pattern = Pattern.compile("\\s*\\w+\\s+(\\w+)\\s+(\\w+)\\s*(\\(\\s*[\\s\\S]*\\s*\\))?\\s+(\\w+)\\s*\\(\\s*([\\s\\S]*)\\s*\\)\\s*[;]?\\s*");
         Matcher matcher = pattern.matcher(command);
-        if(!matcher.find() || !matcher.matches()){
+        if (!matcher.find() || !matcher.matches()) {
             throw new IncorrectSyntaxException();
         }
-        if(!matcher.group(1).equalsIgnoreCase("INTO")){
+        if (!matcher.group(1).equalsIgnoreCase("INTO")) {
             throw new InvalidKeyWordException();
         }
 
@@ -206,13 +211,13 @@ public class Parser {
         String[] columnNames;
         columnNames = columnNamesString.split(",");
 
-        if(!matcher.group(4).equalsIgnoreCase("VALUES")){
+        if (!matcher.group(4).equalsIgnoreCase("VALUES")) {
             throw new InvalidKeyWordException();
         }
 
         String[] v = matcher.group(5).split(",");
         List<String> values = new ArrayList<>();
-        for(String value : v){
+        for (String value : v) {
             value = value.replace("'", "").replace("\"", "");
             value = value.replaceAll("^\\s+", "").replaceAll("\\s+$", "");
             values.add(value);
@@ -223,11 +228,11 @@ public class Parser {
         query.put("Operation", "insert");
         query.put("Name", tableName);
         Map<String, Tuple> record = new HashMap<>();
-        if(columnNames.length != values.size()){
+        if (columnNames.length != values.size()) {
             throw new IncorrectSyntaxException();
         }
 
-        for(int i = 0; i < columnNames.length; i++){
+        for (int i = 0; i < columnNames.length; i++) {
             String columnName = columnNames[i].replaceAll("^\\s+", "").replaceAll("\\s+$", "");
             record.put(columnName, new Tuple(values.get(i)));
         }
@@ -239,12 +244,12 @@ public class Parser {
         return jsonObject;
     }
 
-    private static JSONObject updateCase(String command) throws JSONException, IncorrectSyntaxException, InvalidKeyWordException, UnknownTypeException {
+    private static JSONObject updateCase(String command) throws JSONException, IncorrectSyntaxException {
         JSONObject jsonObject = new JSONObject();
         Pattern pattern = Pattern.compile("(?i)\\s*update\\s+(\\S+)\\s+set\\s+((\\S+\\s*=\\s*\\S+\\s+)+)(where\\s+(.+))?\\s*?[;]?\\s*");
         Matcher matcher = pattern.matcher(command);
 
-        if(!matcher.find()){
+        if (!matcher.find()) {
             throw new IncorrectSyntaxException();
         }
 
@@ -257,12 +262,12 @@ public class Parser {
         Map<String, Tuple> updates = new HashMap<>();
 
         Pattern changePattern = Pattern.compile("(\\w+)\\s*=\\s*(\\S*)\\s*[,]?");
-        for(String change : changes){
+        for (String change : changes) {
             Matcher changeMatcher = changePattern.matcher(change);
-            if(!changeMatcher.find()){
+            if (!changeMatcher.find()) {
                 throw new IncorrectSyntaxException();
             }
-            String value = changeMatcher.group(2).replace("'", "").replace("\"","");
+            String value = changeMatcher.group(2).replace("'", "").replace("\"", "");
             updates.put(changeMatcher.group(1), new Tuple(value));
         }
 
@@ -281,7 +286,7 @@ public class Parser {
         Pattern pattern = Pattern.compile("\\s*\\w+\\s+(\\w+)\\s*[;]?\\s*");
         Matcher matcher = pattern.matcher(command);
 
-        if(!matcher.find() || !matcher.matches()){
+        if (!matcher.find() || !matcher.matches()) {
             throw new IncorrectSyntaxException();
         }
 
@@ -293,22 +298,22 @@ public class Parser {
         return jsonObject;
     }
 
-    private static JSONObject deleteCase(String command) throws JSONException, IncorrectSyntaxException, InvalidKeyWordException {
+    private static JSONObject deleteCase(String command) throws JSONException, IncorrectSyntaxException {
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("Target", "table");
         Pattern pattern = Pattern.compile("(?i)\\s*delete\\s+from\\s+(\\S+)(\\s+where\\s+(.+))?\\s*[;]?\\s*");
         Matcher matcher = pattern.matcher(command);
 
-        if(!matcher.find() || !matcher.matches()){
+        if (!matcher.find() || !matcher.matches()) {
             throw new IncorrectSyntaxException();
         }
 
         String tableName = matcher.group(1);
         JSONObject query = new JSONObject();
         JSONArray jsonConditions;
-        if(matcher.groupCount() > 2){
+        if (matcher.groupCount() > 2) {
             jsonConditions = getConditions(matcher.group(3));
-        }else{
+        } else {
             jsonConditions = new JSONArray();
         }
         query.put("Name", tableName);
@@ -322,18 +327,18 @@ public class Parser {
 
     private static JSONArray getConditions(String conditions) throws JSONException {
         JSONArray jsonConditions = new JSONArray();
-        if(conditions != null){
+        if (conditions != null) {
             Pattern pattern = Pattern.compile("(?i)(\\s*(\\S+)\\s*([>=<])\\s*(\\S+)(\\s+(AND|OR))?\\s*).*");
             Matcher matcher = pattern.matcher(conditions);
-            while (matcher.find()){
+            while (matcher.find()) {
                 JSONObject jsonCondition = new JSONObject();
                 String connector = matcher.group(5);
-                if(connector != null){
+                if (connector != null) {
                     connector = connector.replaceAll("\\s", "");
                 }
-                if(connector == null){
+                if (connector == null) {
                     jsonCondition.put("Connector", "null");
-                }else{
+                } else {
                     jsonCondition.put("Connector", connector);
                 }
                 jsonCondition.put("Tuple", matcher.group(4).replaceAll("\"", ""));
@@ -345,7 +350,7 @@ public class Parser {
             }
         }
 
-        for(int i = 0; i < jsonConditions.length(); i++){
+        for (int i = 0; i < jsonConditions.length(); i++) {
         }
 
         return jsonConditions;
@@ -355,14 +360,14 @@ public class Parser {
         Pattern pattern = Pattern.compile("(?i)\\s*drop\\s+(database|table)\\s+(\\S+)[;]?\\s*");
         Matcher matcher = pattern.matcher(command);
 
-        if(!matcher.find()){
+        if (!matcher.find()) {
             throw new IncorrectSyntaxException();
         }
 
         JSONObject jsonObject = null;
         String name = matcher.group(2);
         String keyWord = matcher.group(1);
-        switch(keyWord.toUpperCase()){
+        switch (keyWord.toUpperCase()) {
             case "TABLE":
                 jsonObject = dropTableCase(name);
                 jsonObject.put("Target", "Database");
