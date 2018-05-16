@@ -1,4 +1,4 @@
-package com.powder.Client;
+package com.powder.Client.Logic;
 
 public class Tuple<T> {
     private T value;

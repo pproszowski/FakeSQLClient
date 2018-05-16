@@ -1,6 +1,6 @@
-package com.powder.Client;
+package com.powder.Client.Logic;
 
-import com.powder.Client.Exception.WrongPasswordException;
+import com.powder.Client.Exception.UnexpectedResponseException;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -14,19 +14,20 @@ import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
 
 public class HttpManager {
+    private static HttpManager instance = null;
     private URL url;
     private URLConnection con;
-    private static HttpManager instance = null;
 
     public static HttpManager getInstance() {
-        if(instance == null){
+        if (instance == null) {
             instance = new HttpManager();
         }
         return instance;
     }
+
     public void sendRequest(String message) throws IOException {
         con = url.openConnection();
-        HttpURLConnection http = (HttpURLConnection)con;
+        HttpURLConnection http = (HttpURLConnection) con;
         http.setRequestMethod("POST");
         http.setDoOutput(true);
         byte[] out = message.getBytes(StandardCharsets.UTF_8);
@@ -34,13 +35,13 @@ public class HttpManager {
         http.setFixedLengthStreamingMode(length);
         http.setRequestProperty("Content-Type", "text/plain; charset=UTF-8");
         http.connect();
-        try(OutputStream os = http.getOutputStream()) {
+        try (OutputStream os = http.getOutputStream()) {
             os.write(out);
             os.flush();
         }
-}
+    }
 
-    public JSONObject getResponse() throws IOException, JSONException {
+    public JSONObject getResponse() throws IOException, UnexpectedResponseException {
         BufferedReader in = new BufferedReader(
                 new InputStreamReader(con.getInputStream()));
         String inputLine;
@@ -51,11 +52,15 @@ public class HttpManager {
         }
         in.close();
 
-        return new JSONObject(response.toString());
+        try {
+            return new JSONObject(response.toString());
+        } catch (JSONException e) {
+            throw new UnexpectedResponseException();
+        }
     }
 
-    public JSONObject establishConnection(String urlInput, String password) throws IOException, WrongPasswordException, JSONException {
-        if(!urlInput.contains("http://")){
+    public JSONObject establishConnection(String urlInput, String password) throws IOException, UnexpectedResponseException {
+        if (!urlInput.contains("http://")) {
             urlInput = "http://" + urlInput;
         }
         url = new URL(urlInput);

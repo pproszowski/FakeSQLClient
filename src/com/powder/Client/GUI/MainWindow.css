@@ -1,0 +1,114 @@
+.root {
+    -fx-background-color: gray;
+}
+
+.list-view{
+    -fx-background-color: #222;
+}
+
+.list-cell:filled:selected:focused, .list-cell:filled:selected {
+    -fx-background-color: #555;
+    -fx-text-fill: #AAA;
+}
+
+.list-cell:even {
+    -fx-background-color: #333;
+    -fx-text-fill: #AAA;
+}
+
+.list-cell:odd{
+    -fx-background-color: #222;
+    -fx-text-fill: #AAA;
+}
+
+.list-cell:filled:hover {
+    -fx-background-color: #555;
+    -fx-text-fill: #AAA;
+}
+
+.table-view{
+    -fx-background-color: #222;
+}
+
+.table-view:focused{
+    -fx-background-color: #222;
+}
+
+.table-view .filler{
+    -fx-background-color: #222;
+}
+
+.table-view .column-header-background{
+    -fx-background-color: linear-gradient(#131313 0%, #424141 100%);
+}
+
+.table-view .column-header-background .label{
+    -fx-background-color: #222;
+    -fx-text-fill: #AAA;
+}
+
+.table-view .column-header {
+    -fx-background-color: #222;
+}
+
+.table-view .table-cell{
+    -fx-text-fill: #AAA;
+}
+
+.table-row-cell{
+    -fx-background-color: -fx-table-cell-border-color, #616161;
+    -fx-background-insets: 0, 0 0 1 0;
+    -fx-padding: 0.0em; /* 0 */
+}
+
+.table-row-cell:odd{
+    -fx-background-color: -fx-table-cell-border-color, #424242;
+    -fx-background-insets: 0, 0 0 1 0;
+    -fx-padding: 0.0em; /* 0 */
+}
+
+.table-row-cell:selected {
+    -fx-background-color: #005797;
+    -fx-background-insets: 0;
+    -fx-background-radius: 1;
+}
+
+.table-view > .virtual-flow > .scroll-bar:vertical,
+.table-view > .virtual-flow > .scroll-bar:vertical > .track,
+.table-view > .virtual-flow > .scroll-bar:vertical > .track-background,
+.table-view > .virtual-flow > .scroll-bar:horizontal,
+.table-view > .virtual-flow > .scroll-bar:horizontal > .track,
+.table-view > .virtual-flow > .scroll-bar:horizontal > .track-background {
+    -fx-background-color: transparent;
+}
+
+.table-view > .virtual-flow > .scroll-bar > .increment-button,
+.table-view > .virtual-flow > .scroll-bar > .decrement-button {
+    -fx-opacity: 0;
+}
+
+.text-area *.content{
+    -fx-background-color: #222;
+    -fx-border-color: #222;
+    -fx-fill: #222;
+}
+.text-area{
+    -fx-text-fill: #aaa;
+    -fx-border-color: #222;
+}
+
+.text-area:focused{
+    -fx-background-color: #222;
+    -fx-fill: #222;
+    -fx-border-color: #222;
+}
+
+.combo-box{
+    -fx-background-color: #222;
+}
+
+.combo-box-base{
+    -fx-background-color: #222;
+}
+
+

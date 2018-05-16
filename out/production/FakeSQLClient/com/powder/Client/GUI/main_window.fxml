@@ -15,7 +15,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.control.TableView?>
-<GridPane styleClass="root" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.powder.Client.Gui.MainWindowController">
+<GridPane fx:id="root" styleClass="root" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.powder.Client.GUI.MainWindowController">
    <padding><Insets bottom="10" left="25" right="25" top="25" /></padding>
    <columnConstraints>
       <ColumnConstraints />
@@ -40,15 +40,15 @@
 
        />
        <TextArea fx:id="commandInput" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="0" GridPane.rowIndex="2" />
-       <Button styleClass="button" fx:id="sendRequestButton" mnemonicParsing="false" onMouseClicked="#sendRequest" prefHeight="26.0" prefWidth="201.0" text="Send Request" GridPane.columnIndex="0" GridPane.rowIndex="3" />
+       <Button styleClass="button" fx:id="sendRequestButton" mnemonicParsing="false" onAction="#sendRequest" prefHeight="26.0" prefWidth="201.0" text="Send Request" GridPane.columnIndex="0" GridPane.rowIndex="3" />
     </VBox>
    <VBox spacing="10" GridPane.columnIndex="2" GridPane.rowIndex="0" GridPane.rowSpan="5" GridPane.columnSpan="4">
       <padding><Insets left="105"/></padding>
       <Text  text="Tables:" />
-      <ListView fx:id="tablesListView" prefHeight="300.0" prefWidth="200.0"/>
+      <ListView fx:id="tablesListView" prefHeight="300.0" prefWidth="400.0"/>
    </VBox>
 
-   <VBox fx:id="vbox" spacing="20" GridPane.rowIndex="7" GridPane.rowSpan="2" GridPane.columnIndex="0" GridPane.columnSpan="5">
+   <VBox fx:id="vbox" spacing="20" GridPane.rowIndex="7" GridPane.rowSpan="2" GridPane.columnIndex="0" GridPane.columnSpan="8">
       <padding><Insets top="50"/></padding>
       <Label fx:id="labelResponse" prefHeight="200.0" minWidth="550.0"  />
    </VBox>

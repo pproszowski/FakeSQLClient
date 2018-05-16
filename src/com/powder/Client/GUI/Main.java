@@ -1,10 +1,14 @@
-package com.powder.Client.Gui;
+package com.powder.Client.GUI;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.input.KeyCode;
 import javafx.stage.Stage;
+
+import java.awt.event.KeyEvent;
 
 public class Main extends Application {
 

@@ -9,25 +9,25 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.control.Button?>
 <?import java.net.URL?>
-<GridPane fx:controller="com.powder.Client.Gui.LogInController"
+<GridPane fx:controller="com.powder.Client.GUI.LogInController"
           xmlns:fx="http://javafx.com/fxml" alignment="center" hgap="10" vgap="10"
             styleClass="root">
     <padding><Insets top="25" right="25" bottom="10" left="25"/></padding>
 
-    <Text id="logo" text="FAKE SQL"
+    <Text styleClass="logo" text="FAKE SQL"
           GridPane.columnIndex="0" GridPane.rowIndex="0"
           GridPane.columnSpan="2"/>
 
-    <Label  text="URL:"
+    <Label text="URL:"
            GridPane.columnIndex="0" GridPane.rowIndex="1"/>
 
     <TextField
-            fx:id="urlInput" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+            styleClass="text-field" fx:id="urlInput" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
 
     <Label text="Password:"
            GridPane.columnIndex="0" GridPane.rowIndex="2"/>
 
-    <PasswordField fx:id="passwordField"
+    <PasswordField styleClass="text-field" fx:id="passwordField"
                    GridPane.columnIndex="1" GridPane.rowIndex="2"/>
 
     <HBox spacing="10" alignment="bottom_right"

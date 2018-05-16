@@ -1,8 +1,7 @@
-package com.powder.Client;
+package com.powder.Client.Logic;
 
 import com.powder.Client.Exception.IncorrectSyntaxException;
 import com.powder.Client.Exception.InvalidKeyWordException;
-import com.powder.Client.Exception.UnknownTypeException;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -13,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
 public class Parser {
 
     public static JSONObject parseSQLtoJSON(String command) throws InvalidKeyWordException, JSONException, IncorrectSyntaxException {
@@ -207,6 +207,9 @@ public class Parser {
 
         String tableName = matcher.group(2);
         String columnNamesString = matcher.group(3);
+        if(columnNamesString == null){
+            throw new IncorrectSyntaxException();
+        }
         columnNamesString = columnNamesString.replace("(", "").replace(")", "");
         String[] columnNames;
         columnNames = columnNamesString.split(",");
@@ -246,7 +249,11 @@ public class Parser {
 
     private static JSONObject updateCase(String command) throws JSONException, IncorrectSyntaxException {
         JSONObject jsonObject = new JSONObject();
-        Pattern pattern = Pattern.compile("(?i)\\s*update\\s+(\\S+)\\s+set\\s+((\\S+\\s*=\\s*\\S+\\s+)+)(where\\s+(.+))?\\s*?[;]?\\s*");
+        Pattern pattern;
+        String updateTableNameAndSetRegExp = "\\s*update\\s+(\\S+)\\s+set\\s+";
+        String changesRegExp = "((\\s*(\\S+)\\s*=\\s*(\\S+)\\s*[,]?)+)";
+        String whereRegExp = "(\\s*where\\s+((\\S+\\s*[=<>]\\s*\\S+(\\s+(and|or)\\s+)?)+))?";
+        pattern = Pattern.compile("(?i)" + updateTableNameAndSetRegExp + changesRegExp + whereRegExp);
         Matcher matcher = pattern.matcher(command);
 
         if (!matcher.find()) {
@@ -261,17 +268,17 @@ public class Parser {
         query.put("Operation", "update");
         Map<String, Tuple> updates = new HashMap<>();
 
-        Pattern changePattern = Pattern.compile("(\\w+)\\s*=\\s*(\\S*)\\s*[,]?");
+        Pattern changePattern = Pattern.compile(changesRegExp);
         for (String change : changes) {
             Matcher changeMatcher = changePattern.matcher(change);
             if (!changeMatcher.find()) {
                 throw new IncorrectSyntaxException();
             }
-            String value = changeMatcher.group(2).replace("'", "").replace("\"", "");
-            updates.put(changeMatcher.group(1), new Tuple(value));
+            String value = changeMatcher.group(4).replace("'", "").replace("\"", "");
+            updates.put(changeMatcher.group(3), new Tuple(value));
         }
 
-        JSONArray jsonConditions = getConditions(matcher.group(4));
+        JSONArray jsonConditions = getConditions(matcher.group(6));
 
         query.put("Changes", updates);
         query.put("Conditions", jsonConditions);
@@ -349,10 +356,6 @@ public class Parser {
                 matcher = pattern.matcher(conditions);
             }
         }
-
-        for (int i = 0; i < jsonConditions.length(); i++) {
-        }
-
         return jsonConditions;
     }
 

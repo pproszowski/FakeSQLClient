@@ -1,0 +1,13 @@
+.root {
+    -fx-background-color: gray;
+}
+
+.logo{
+    -fx-font-size: 36px;
+}
+
+.text-field{
+    -fx-background-color: #222;
+    -fx-text-fill: #AAA;
+}
+
